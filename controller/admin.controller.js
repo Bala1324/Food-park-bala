@@ -10,6 +10,8 @@ router.delete("/deleteTheUserDetails", deleteTheFoodDetails);
 // router.get("/listOrdersByUserDetails", listOrdersByUserDetails);
 router.get("/fetchOrdersDetails", fetchOrdersDetails);
 router.put("/approveOrder", approveOrder);
+router.put("/aproveOrder", adminService.aproveOrder);
+
 router.delete("/cancelOrder", adminService.cancelOrder);
 
 module.exports = router;

@@ -19,7 +19,8 @@ const ordersSchema = new Schema({
             approve_status:{type: String, required: true},
             order_uuid: {type: String, required: false},
             user_email: {type: String, required: false},
-            email_id: {type: String, required: false}
+            email_id: {type: String, required: false},
+            foodId: {type: String, required: false}
 },{
 	timestamps: true
 });

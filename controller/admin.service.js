@@ -23,8 +23,9 @@ module.exports = {
     deleteTheFoodDetails,
     // listOrdersByUserDetails,
     fetchOrdersDetails,
-	approveOrder,
-    cancelOrder
+	// approveOrder,
+	cancelOrder,
+	aproveOrder
 }
 
 
@@ -73,25 +74,56 @@ async function fetchOrdersDetails(req,callback){
 	})
 };
 
-async function approveOrder(req,callback){
-	// let condition =req.order_uuid;
-    //  console.log(condition);
+// async function approveOrder(req,callback){
+// 	let email = req.body.email_id;
+// 	console.log(email);
+// 	 let condition =req.body.foodId;
+// 	 console.log(condition);
+	 
+// 	// let update = {
+//     //     "approve_status": "true"
+//     // };
+// 	// //console.log(update)
+// 	// let option = {new : true}
+// 	// await orders.findOneAndUpdate({"uuid" :condition}, update, option).exec().then((data)=>{
+// 	// 	callback(data);
+// 	// })
+// };
+
+
+// async function cancelOrder(req,callback){
+// 	await orders.findByIdAndRemove(req).exec().then((data)=>{
+// 		callback(data);
+// 	})
+// };
+
+async function aproveOrder(req,res) {
+	let orderId = req.body.orderId;
+	console.log(orderId)
 	let update = {
-        "approve_status": "true"
-    };
-	//console.log(update)
+		"approve_status": "true"
+	};
 	let option = {new : true}
-	await orders.findOneAndUpdate({"uuid" :req.order_uuid}, update, option).exec().then((data)=>{
-		callback(data);
-	})
-};
+	
+	let result = await orders.findOneAndUpdate({"uuid" :orderId}, update, option).exec();
+	let details = {
+		from: "baladummyemail@gmail.com",
+		to: result.user_detail.user_email,
+		subject: "Order Aproved",
+		text: "Your order is Aproved by Admin.."+"\n OrderId: "+orderId
+	}
+	console.log(result)
+    if(result){
+		sendMail(details);
 
-async function cancelOrder(req,callback){
-	await orders.findByIdAndRemove(req).exec().then((data)=>{
-		callback(data);
-	})
-};
+		res.json({"status": "Success", "message": "order aproved"});
+	}else{
+		res.json({"status": "Success", "message": "order not aproved"});
+	}
+		
 
+}
+	
 async function  cancelOrder(req,res){
 	// let email = req.body.user_email;
 	let uuid = req.body.order_uuid;
@@ -138,3 +170,4 @@ function sendMail(details){
 		}
 	})
 }
+
