@@ -10,8 +10,8 @@ const bcrypt = require("bcrypt");
 const mailTransport = nodemailer.createTransport({
 	"service" : "gmail",
 	"auth": {
-		user : "balachandiran132@gmail.com",
-		pass: "1324bala1324"
+		user : "baladummyemail@gmail.com",
+		pass: "balabala1324"
 	}
 });
 
@@ -32,7 +32,7 @@ module.exports = {
 async function registerUser(req,res) {
 	let email = req.body.email;
 	let details = {
-		from: "balachandiran132@gmail.com",
+		from: "baladummyemail@gmail.com",
 		to: email,
 		subject: "Wellcome to Food Park",
 		text: "Wellcome to food Park, You have successfullly registered...."
@@ -196,7 +196,7 @@ async function createOrder(req,res) {
 
 		let details = {
 			from: email,
-			to: "balachandiran132@gmail.com",
+			to: "baladummyemail@gmail.com",
 			subject: "Recieved an order from Food Park",
 			text: "Order recived"+"\nUser Name: "+ users.name+"\nUser Email: "+users.email+"\n\nDish Category: "+ foodDetail.category +"\nDish Name: "+foodDetail.dish_name+"\nDish Price: "+ foodDetail.dish_price
 		}
@@ -231,7 +231,7 @@ async function createOrder(req,res) {
 		const order_detail = await orders.find({"uuid": uuid}).exec();
 		console.log(order_detail)
 		let details = {
-			from: "balachandiran132@gmail.com",
+			from: "baladummyemail@gmail.com",
 			to: email,
 			subject: "Order Canceled",
 			text: "Your order is Canceled.."

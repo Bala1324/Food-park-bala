@@ -10,8 +10,8 @@ const nodemailer = require("nodemailer");
 const mailTransport = nodemailer.createTransport({
 	"service" : "gmail",
 	"auth": {
-		user : "balachandiran132@gmail.com",
-		pass: "1324bala1324"
+		user : "baladummyemail@gmail.com",
+		pass: "balabala1324"
 	}
 });
 
@@ -98,7 +98,7 @@ async function  cancelOrder(req,res){
 	const order_detail = await orders.find({"uuid": uuid}).exec();
 	console.log(order_detail[0].user_detail.user_email);
 	let details = {
-		from: "balachandiran132@gmail.com",
+		from: "baladummyemail@gmail.com",
 		to: order_detail[0].user_detail.user_email,
 		subject: "Order Canceled",
 		text: "Your order is Canceled by Admin.."
