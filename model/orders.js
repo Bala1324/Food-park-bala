@@ -20,7 +20,7 @@ const ordersSchema = new Schema({
             order_uuid: {type: String, required: false},
             user_email: {type: String, required: false},
             email_id: {type: String, required: false},
-            foodId: {type: String, required: false}
+            
 },{
 	timestamps: true
 });

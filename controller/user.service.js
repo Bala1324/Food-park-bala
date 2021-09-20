@@ -16,14 +16,12 @@ const mailTransport = nodemailer.createTransport({
 });
 
 module.exports = {
-	 registerUser,
-      loginUser,
-      forgetPassword,
-      resetPassword,
-	//  emailIDAvailability,
-	//  mobile_Availability,
-	  logout,
-	  getTheFoodDetails,
+	   registerUser,
+	   loginUser,
+	   logout,
+       forgetPassword,
+       resetPassword,
+	   getTheFoodDetails,
 	   createOrder,
 	   cancelOrder
 }
@@ -55,7 +53,7 @@ async function registerUser(req,res) {
 		users.save();
 		console.log(users);
 		sendMail(details);
-		res.json({"status": "Success", "message": "Register successfully"});
+		res.json({"status": "Success", "message": "Register successfully","data":users});
 	}else{
 		res.json({"status": "Failed", "message": "Please Provide password"});
 	}
@@ -73,7 +71,7 @@ async function loginUser(req,res) {
 	let match = await bcrypt.compare(password, pass);
 	if(match){
 		const data  = await user.findOneAndUpdate({email: email}, {loginstatus: "true"}, {new: true}).exec()
-		res.json({"status": "Success", "message": "Login successfully"});
+		res.json({"status": "Success", "message": "Login successfully","data":data});
 	}else{
 		res.json({"status": "Failed", "message": "Username or password wrong"});
 	}
@@ -117,36 +115,6 @@ async function resetPassword(req,res) {
 	}
 }
 
-// // async function verifyAccount(req,callback){
-// // 	await user.findByIdAndRemove(req).exec().then((data)=>{
-// // 		callback(data);
-// // 	})
-// // };
-
-
-// //Email id availability;
-// async function emailIDAvailability(req,callback) {	
-// 	let email = req.email
-// 	const email_detail = await user.find({"email": email}).exec();
-// 	if(email_detail.length > 0){
-// 		callback("email already exits")
-// 	}else{
-// 		callback("Success")
-// 	}
-// };
-
-// //Mobile number availability
-// async function mobile_Availability(req,res,next) {
-// 	let mobile = req.query.mobile;
-// 	const mobile_Availab = await user.find({"mobile": mobile}).exec();
-// 	if(mobile_Availab.length > 0){
-// 		res.json({"status": "Failed", "message": "Mobile already exists"});
-// 	}else{
-// 		res.json({"status": "Success", "message": ""});
-// 	}
-// };
-
-
 // logout
 async function logout(req,res,next) {
 	let email = req.body.email;
@@ -161,6 +129,7 @@ async function getTheFoodDetails(req,callback) {
 	})
 }
 
+//create a order
 async function createOrder(req,res) {
 
 		 let email = req.body.user_email;
@@ -171,7 +140,7 @@ async function createOrder(req,res) {
 		 let userData = {
 			"user_email": users.email,
 			"user_name": users.name,
-			"user_uuid" : users.uuid,
+			"user_uuid" : users.uuid
 		 }
 		let foodDetail = await food.findOne({ "uuid" : uuid});
 		console.log(foodDetail)
@@ -193,15 +162,7 @@ async function createOrder(req,res) {
 			"dish_count": dish_count,
 			"approve_status" :"false" 
 		};
-
-		let details = {
-			from: email,
-			to: "baladummyemail@gmail.com",
-			subject: "Recieved an order from Food Park",
-			text: "Order recived"+"\nUser Name: "+ users.name+"\nUser Email: "+users.email+"\n\nDish Category: "+ foodDetail.category +"\nDish Name: "+foodDetail.dish_name+"\nDish Price: "+ foodDetail.dish_price
-		}
 		
-	
 		if(!users){
 
 			res.json({"status": "Failed", "message": "You are not authorised user!"});
@@ -215,16 +176,31 @@ async function createOrder(req,res) {
 				let placeOrder = new orders(datas);
 				placeOrder.save().then((data)=>{
 				   console.log(data);
+				   let details = {
+					from: email,
+					to: "baladummyemail@gmail.com",
+					subject: "Recieved an order from Food Park",
+					text: "Order recived"+"\nOrderId: "+data.uuid+"\nUser Name: "+ users.name+"\nUser Email: "+users.email+"\n\nDish Category: "+ foodDetail.category +"\nDish Name: "+foodDetail.dish_name+"\nDish Price: "+ foodDetail.dish_price
+				}
+				let detailuser = {
+					from: "baladummyemail@gmail.com",
+					to: email,
+					subject: "Order registred",
+					text: "Your order successfully recived"+"\nOrderId: "+data.uuid+"\nThank you. Regards Food park"
+			
+				}
+				   sendMail(details);
+				   sendMail(detailuser);
+				   res.json({"status": "Success", "message": "Your order registered successfully","data":data});
 			   })
-			   sendMail(details);
-				res.json({"status": "Success", "message": "Your order registered successfully"});
+			  
 		
 			}
 		}
 		  
 	}	
 
-
+//cancel a order
 	async function  cancelOrder(req,res){
 		let email = req.body.user_email;
 		let uuid = req.body.order_uuid;
@@ -245,7 +221,7 @@ async function createOrder(req,res) {
 				 let remove = await orders.findOneAndRemove(uuid)
 				 if(remove){
 					sendMail(details);
-					res.json({"status": "Success", "message": "sucessss"});
+					res.json({"status": "Success", "message": "sucessss","data":remove});
 				 }else{
 					res.json({"status": "Failed", "message": "failed"});
 				 }
@@ -256,50 +232,10 @@ async function createOrder(req,res) {
 			}
 		   
 		}
-		
-		
-		
-		
 
 	}
 
-
-	// async function cancelOrderbyUser(){
-
-	// 	let email = req.body.user_email;
-	// 	let dish_id = req.body.dish_id;
-	// 	let users = await user.findOne({"email": "bala@gmail.com"}).exec();
-	//    let foodDtetail = await food.findOne({ "dish_name" : "biriyani"});
-	   
-	//    let details = {
-	// 	   from: email,
-	// 	   to: "balachandiran132@gmail.com",
-	// 	   subject: "Canceled an order",
-	// 	   text: "order canceled"
-	//    }
-	   
-	//    if(!users){
-
-	// 	   res.json({"status": "Failed", "message": "You are not authorised user!"});
-	//    }else{
-
-	// 	   if(!foodDtetail){
-	// 		   res.json({"status": "Failed", "message": "Food not canceled yet!"});
-   
-	// 		 }else{
-	// 		   //console.log(foodDtetail);
-			   
-	// 		   let placeOrder = new orders(datas);
-	// 		   placeOrder.save().then((data)=>{
-	// 			  console.log(data);
-	// 		  })
-	// 		  sendMail(details);
-	// 		   res.json({"status": "Success", "message": "Your order registered successfully"});
-	   
-	// 	   }
-	//    }
-   
-	// }
+	//mail function
 	function sendMail(details){
 		
 		let mailData;

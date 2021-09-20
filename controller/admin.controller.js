@@ -2,16 +2,13 @@ const express = require("express");
 const router = express.Router();
 const adminService = require("./admin.service.js");
 
-
+//routers
 router.post('/addFoodDetails', addFoodDetails);
 router.get("/getTheFoodDetails", getTheFoodDetails);
 router.put("/updateTheFoodDetails", updateTheFoodDetails);
-router.delete("/deleteTheUserDetails", deleteTheFoodDetails);
-// router.get("/listOrdersByUserDetails", listOrdersByUserDetails);
-router.get("/fetchOrdersDetails", fetchOrdersDetails);
-router.put("/approveOrder", approveOrder);
-router.put("/aproveOrder", adminService.aproveOrder);
-
+router.delete("/deleteTheFoodDetails", deleteTheFoodDetails);
+router.get("/getOrdersDetails", adminService.getOrdersDetails);
+router.put("/approveOrder", adminService.approveOrder);
 router.delete("/cancelOrder", adminService.cancelOrder);
 
 module.exports = router;
@@ -29,7 +26,6 @@ function getTheFoodDetails(req,res,next) {
 		res.json({"status": "Success", "message": "Food details fetched successfully", "data": result});
 	})
 }
-
 
 // update the food details
 function updateTheFoodDetails(req,res, next) {
@@ -54,39 +50,5 @@ function deleteTheFoodDetails(req,res, next) {
 			res.json({"status": "Failed", "message": "Missing uuid"});
 
 		}
-	})
-}
-
-// //list how many orders by User
-// function listOrdersByUserDetails(req,res, next) {
-// 	adminService.listOrdersByUserDetails(req.query, function(result){
-// 		res.json({"status": "Success", "message": "fetched Orders by user successfully"})
-// 	})
-// }
-//Fetch the order details
-function fetchOrdersDetails(req,res, next) {
-	userService.fetchOrdersDetails(req.query, function(result){
-		res.json({"status": "Success", "message": "Orders Details fetched successfully"})
-	})
-}
-
-
-//approve the order
-function approveOrder(req,res, next) {
-	adminService.approveOrder(req.query, function(result){
-		if(result){
-			res.json({"status": "Success", "message": "Order Approved"});
-
-		}else{
-			res.json({"status": "Failed", "message": "Order not Approved"});
-
-		}
-	})
-}
-
-//cancle the order
-function cancelOrder(req,res, next) {
-	adminService.cancelOrder(req.query, function(result){
-		res.json({"status": "Success", "message": "Order Canceled"})
 	})
 }

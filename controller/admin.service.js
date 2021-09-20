@@ -20,12 +20,10 @@ module.exports = {
 	addFoodDetails,
 	getTheFoodDetails,
 	updateTheFoodDetails,
-    deleteTheFoodDetails,
-    // listOrdersByUserDetails,
-    fetchOrdersDetails,
-	// approveOrder,
+	deleteTheFoodDetails,
+	approveOrder,
 	cancelOrder,
-	aproveOrder
+	getOrdersDetails
 }
 
 
@@ -37,6 +35,7 @@ async function addFoodDetails(req,callback) {
 	})
 };
 
+//get the food details
 async function getTheFoodDetails(req,callback) {
 	await food.find().exec().then((data)=>{
 		callback(data);
@@ -55,6 +54,7 @@ async function updateTheFoodDetails(req,callback) {
 
 }
 
+//delete a food detail
 async function deleteTheFoodDetails(req,callback){
 	let uuid = req.uuid;
 	await food.findOneAndRemove(uuid).exec().then((data)=>{
@@ -62,42 +62,15 @@ async function deleteTheFoodDetails(req,callback){
 	})
 };
 
-// async function listOrdersByUserDetails(req,callback){
-// 	await food.findByIdAndRemove(req).exec().then((data)=>{
-// 		callback(data);
-// 	})
-// };
-	
-async function fetchOrdersDetails(req,callback){
-	await orders.find().exec().then((data)=>{
-		callback(data);
-	})
-};
 
-// async function approveOrder(req,callback){
-// 	let email = req.body.email_id;
-// 	console.log(email);
-// 	 let condition =req.body.foodId;
-// 	 console.log(condition);
-	 
-// 	// let update = {
-//     //     "approve_status": "true"
-//     // };
-// 	// //console.log(update)
-// 	// let option = {new : true}
-// 	// await orders.findOneAndUpdate({"uuid" :condition}, update, option).exec().then((data)=>{
-// 	// 	callback(data);
-// 	// })
-// };
-
-
-// async function cancelOrder(req,callback){
-// 	await orders.findByIdAndRemove(req).exec().then((data)=>{
+// async function fetchOrdersDetails(req,callback){
+// 	await orders.find().exec().then((data)=>{
 // 		callback(data);
 // 	})
 // };
 
-async function aproveOrder(req,res) {
+// admin aprove a order
+async function approveOrder(req,res) {
 	let orderId = req.body.orderId;
 	console.log(orderId)
 	let update = {
@@ -110,20 +83,20 @@ async function aproveOrder(req,res) {
 		from: "baladummyemail@gmail.com",
 		to: result.user_detail.user_email,
 		subject: "Order Aproved",
-		text: "Your order is Aproved by Admin.."+"\n OrderId: "+orderId
+		text: "Your order is Approved by Admin.."+"\n OrderId: "+orderId
 	}
 	console.log(result)
     if(result){
 		sendMail(details);
-
-		res.json({"status": "Success", "message": "order aproved"});
+		res.json({"status": "Success", "message": "order approved","data":result});
 	}else{
-		res.json({"status": "Success", "message": "order not aproved"});
+		res.json({"status": "Success", "message": "order not approved"});
 	}
 		
 
 }
 	
+//admin cancel a order
 async function  cancelOrder(req,res){
 	// let email = req.body.user_email;
 	let uuid = req.body.order_uuid;
@@ -142,17 +115,26 @@ async function  cancelOrder(req,res){
 			 let remove = await orders.findOneAndRemove(uuid)
 			 if(remove){
 				sendMail(details);
-				res.json({"status": "Success", "message": "sucessss"});
+				res.json({"status": "Success", "message": "sucessss","data": remove});
 			 }else{
 				res.json({"status": "Failed", "message": "failed"});
 			 }
 	}
 	
-	
-	
-	
-
 }
+
+//get the food details
+async function getOrdersDetails(req,res) {
+	let result = await orders.find().exec()
+	if(result){
+		res.json({"status": "Success", "message": "Success","data":result});
+	}else{
+		res.json({"status": "Failed", "message": "Failed"});
+	}
+		
+}
+
+// mail function
 function sendMail(details){
 		
 	let mailData;
